@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Zionetix</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<!-- FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- AOS Animation -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="section-nav">
+
+<div class="nav-dot" data-section="hero" data-label="Home"></div>
+
+<div class="nav-dot" data-section="portfolio" data-label="Work"></div>
+
+<div class="nav-dot" data-section="faq" data-label="FAQ"></div>
+
+<div class="nav-dot" data-section="about" data-label="About"></div>
+
+<div class="nav-dot" data-section="gallery" data-label="Gallery"></div>
+
+<div class="nav-dot" data-section="contact" data-label="Contact"></div>
+
+</div>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+<div class="logo">
+ZIONETIX
+</div>
+
+<div class="menu-toggle" id="menu-toggle">☰</div>
+
+<ul class="nav-links" id="nav-links">
+<li><a href="#hero">Home</a></li>
+
+<li><a href="#portfolio">Work</a></li>
+
+<li><a href="#faq">FAQ</a></li>
+
+<li><a href="#about">About</a></li>
+
+<li><a href="#gallery">Gallery</a></li>
+
+<li><a href="#contact">Contact</a></li>
+
+</ul>
+
+</nav>
+
+
+
+<!-- HERO SECTION -->
+
+<section id="hero">
+
+<div class="hero-content">
+<p id="hero-quote">Designing Experiences That Inspire</p>
+<h1>ZIONETIX</h1>
+
+<p>We Serve Your Dreams</p>
+
+<div class="hero-buttons">
+
+<a href="#portfolio" class="btn-secondary">See Our Work</a>
+
+<a href="#contact" class="btn-primary">Contact Us Now</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- PORTFOLIO -->
+
+<section id="portfolio">
+
+<h2 data-aos="fade-up">Our Work</h2>
+
+<div class="portfolio-grid">
+
+<div class="project-card" data-aos="fade-up" data-aos-delay="100">
+
+<img src="images/restaurant.png" alt="Restaurant Website">
+
+<h3>Restaurant Website</h3>
+
+<p>Modern responsive website for restaurant businesses.</p>
+
+</div>
+
+<div class="project-card" data-aos="fade-up" data-aos-delay="200">
+
+<img src="images/gym.png" alt="Gym Website">
+
+<h3>Gym Website</h3>
+
+<p>Landing page for fitness studios.</p>
+
+</div>
+
+<div class="project-card" data-aos="fade-up" data-aos-delay="300">
+
+<img src="images/estate.png" alt="Real Estate Website">
+
+<h3>Real Estate Website</h3>
+
+<p>Modern property listing platform.</p>
+
+</div>
+
+<div class="project-card" data-aos="fade-up" data-aos-delay="400">
+
+<img src="images/portfolio.png" alt="Photography Portfolio">
+
+<h3>Photography Portfolio</h3>
+
+<p>Clean portfolio for professional photographers.</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- FAQ -->
+
+<section id="faq">
+
+<h2>FAQ</h2>
+
+<div class="faq-item">
+<h3 class="faq-question">How much does a website cost?</h3>
+<p class="faq-answer">Pricing depends on the complexity of the project.</p>
+</div>
+
+<div class="faq-item">
+<h3 class="faq-question">How long does it take?</h3>
+<p class="faq-answer">Most websites are completed within 5–10 days.</p>
+</div>
+<div class="faq-item">
+<h3 class="faq-question">Do you provide support?</h3>
+<p class="faq-answer">Yes, we provide support and maintenance.</p>
+</div>
+
+<div class="faq-item">
+<h3 class="faq-question">Do you design mobile apps?</h3>
+<p class="faq-answer">Yes, we create modern mobile app UI/UX designs.</p>
+</div>
+
+<div class="faq-item">
+<h3 class="faq-question">Can you improve SEO?</h3>
+<p class="faq-answer">Yes, we optimize websites for search engines.</p>
+</div>
+
+<div class="faq-item">
+<h3 class="faq-question">How can I contact you?</h3>
+<p class="faq-answer">You can contact us through our website contact section.</p>
+</div>
+</section>
+
+
+
+<!-- ABOUT -->
+
+<section id="about">
+
+<h2>About Zionetix</h2>
+
+<p>
+to create modern, responsive, and user-friendly websites that help businesses grow online. We aim to provide high-quality and affordable web development solutions while continuously improving our technical skills and delivering value to our clients
+</p>
+
+</section>
+<!-- GALLERY SECTION -->
+
+<section id="gallery" class="gallery-section">
+<h2 class="section-title">Gallery</h2>
+<div class="gallery-wrapper">
+
+<div class="gallery-image">
+<img id="galleryImg" src="images/web design.jpeg">
+</div>
+
+<div class="gallery-content">
+
+<h2 id="galleryTitle">Web Design Project</h2>
+
+<p id="galleryText">
+We designed a modern responsive business website with smooth UI and fast performance.
+</p>
+
+<div class="gallery-buttons">
+
+<button onclick="prevSlide()">Previous</button>
+<button onclick="nextSlide()">Next</button>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CONTACT -->
+
+<section id="contact">
+
+<h2>Start Your Project</h2>
+<form id="contact-form" class="contact-form">
+
+<input type="text" name="name" placeholder="Full Name" required>
+
+<input type="email" name="email" placeholder="Email Address" required>
+
+<input type="text" name="phone" placeholder="Phone / WhatsApp">
+
+<textarea name="message" placeholder="Tell us about your project"></textarea>
+
+<button type="submit" id="submit-btn">Submit</button>
+
+</form>
+
+</section>
+
+
+
+<!-- GO TO TOP -->
+
+<button id="topButton">↑</button>
+
+
+<!-- GO TO BOTTOM -->
+
+<button id="bottomButton">↓</button>
+
+
+
+<!-- SCRIPTS -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+
+<footer class="footer">
+
+<div class="footer-container">
+
+<div class="footer-left">
+
+<h2>Get in Touch</h2>
+
+<p>
+Don’t worry, we’re here to help bring your ideas to life.
+Share your requirements and we’ll get back to you.
+</p>
+
+<a href="#contact" class="footer-btn">Contact Now</a>
+
+</div>
+
+
+<div class="footer-column">
+
+<h3>Contact Us</h3>
+
+<p>Zionetix</p>
+<p>+91 70933 65749</p>
+<p>zionetixsolutions@gmail.com</p>
+<p>
+14/196-82-56, BY-PASS Road,<br>
+Sundharaya Nagar, Andhra Pradesh,<br>
+Machilipatnam, India.
+</p>
+
+</div>
+
+
+<div class="footer-column">
+
+<h3>Services</h3>
+
+<p>Website Development</p>
+<p>App Solutions</p>
+<p>UI/UX Design</p>
+
+</div>
+
+
+<div class="footer-column">
+
+<h3>Explore</h3>
+
+<p><a href="#portfolio">Projects</a></p>
+<p><a href="#gallery">gallery</p>
+<p><a href="#contact">Contact</a></p>
+
+</div>
+
+</div>
+
+
+<div class="footer-bottom">
+
+<p>© 2026 Zionetix. All Rights Reserved.</p>
+
+</div>
+
+</footer>
+<script>
+
+const quotes = [
+"Designing Experiences That Inspire",
+"Turning Ideas into Powerful Websites",
+"Creative Solutions for Modern Brands",
+"Helping Businesses Grow Online",
+"Building the Future of Digital"
+];
+
+let index = 0;
+
+function changeQuote(){
+    index++;
+
+    if(index >= quotes.length){
+        index = 0;
+    }
+
+    document.getElementById("hero-quote").textContent = quotes[index];
+}
+
+setInterval(changeQuote, 3000);
+
+</script>
+<script>
+
+const galleryData = [
+
+{
+img:"images/web design.jpeg",
+title:"Web Design Project",
+text:"Modern and responsive website design that helps businesses create a strong online presence and attract more customers."
+},
+
+{
+img:"images/app design.jpeg",
+title:"Mobile App Design",
+text:"Creative and user-friendly mobile app UI/UX design focused on smooth navigation and better user experience."
+},
+
+{
+img:"images/digital.jpeg",
+title:"Digital Marketing",
+text:"Strategic digital marketing solutions including SEO and social media to improve brand visibility and online growth."
+}
+
+];
+
+let galleryIndex = 0;
+
+function updateGallery(){
+
+const img = document.getElementById("galleryImg");
+const title = document.getElementById("galleryTitle");
+const text = document.getElementById("galleryText");
+
+/* animation reset */
+
+img.classList.remove("gallery-animate");
+title.classList.remove("gallery-animate");
+text.classList.remove("gallery-animate");
+
+void img.offsetWidth;
+
+/* content update */
+
+img.src = galleryData[galleryIndex].img;
+title.innerText = galleryData[galleryIndex].title;
+text.innerText = galleryData[galleryIndex].text;
+
+/* animation add */
+
+img.classList.add("gallery-animate");
+title.classList.add("gallery-animate");
+text.classList.add("gallery-animate");
+
+/* Button control */
+
+document.getElementById("prevBtn").disabled = galleryIndex === 0;
+document.getElementById("nextBtn").disabled = galleryIndex === galleryData.length - 1;
+
+}
+
+function nextSlide(){
+
+if(galleryIndex < galleryData.length - 1){
+galleryIndex++;
+updateGallery();
+}
+
+}
+
+function prevSlide(){
+
+if(galleryIndex > 0){
+galleryIndex--;
+updateGallery();
+}
+
+}
+
+/* page load lo first image */
+
+updateGallery();
+
+</script>
+</html>
