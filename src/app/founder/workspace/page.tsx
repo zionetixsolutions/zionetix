@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import WorkspaceHeader from "@/components/workspace/WorkspaceHeader";
 import WorkspaceSearchBar from "@/components/workspace/WorkspaceSearchBar";
 import WorkspaceGrid from "@/components/workspace/WorkspaceGrid";
@@ -5,27 +9,24 @@ import WorkspaceActivity from "@/components/workspace/WorkspaceActivity";
 import WorkspaceInsights from "@/components/workspace/WorkspaceInsights";
 
 export default function WorkspacePage() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  function handleWorkspaceCreated() {
+    setRefreshKey((prev) => prev + 1);
+  }
+
   return (
-    <div
-      className="
-      max-w-[1500px]
-      mx-auto
-      "
-    >
+    <div className="max-w-[1500px] mx-auto">
+
       <WorkspaceHeader />
 
-      <WorkspaceSearchBar />
+      <WorkspaceSearchBar
+        onWorkspaceCreated={handleWorkspaceCreated}
+      />
 
-      <WorkspaceGrid />
+      <WorkspaceGrid key={refreshKey} />
 
-      <div
-        className="
-        mt-8
-        grid
-        grid-cols-12
-        gap-6
-        "
-      >
+      <div className="mt-8 grid grid-cols-12 gap-6">
         <div className="col-span-8">
           <WorkspaceActivity />
         </div>
@@ -35,17 +36,7 @@ export default function WorkspacePage() {
         </div>
       </div>
 
-      <footer
-        className="
-        mt-10
-        border-t
-        pt-6
-        flex
-        justify-between
-        text-sm
-        text-zinc-400
-        "
-      >
+      <footer className="mt-10 border-t pt-6 flex justify-between text-sm text-zinc-400">
         <span>
           © 2026 Primordial. All rights reserved.
         </span>
@@ -56,6 +47,7 @@ export default function WorkspacePage() {
           <span>Support</span>
         </div>
       </footer>
+
     </div>
   );
 }

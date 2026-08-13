@@ -15,7 +15,7 @@ interface PageProps {
   }>;
 }
 
-interface Workspace {
+interface ApiWorkspace {
   id: string;
   venture_id: string;
   workspace_name: string;
@@ -25,29 +25,29 @@ interface Workspace {
   updated_at: string;
 }
 
-async function getWorkspace(id: string): Promise<Workspace | null> {
+async function getWorkspace(id: string) {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000";
+
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/api/workspaces/${id}`,
+    `${baseUrl}/api/workspaces/${id}`,
     {
       cache: "no-store",
     }
   );
 
-  if (response.status === 404) {
-    return null;
-  }
-
   if (!response.ok) {
-    throw new Error("Failed to fetch workspace");
+    return null;
   }
 
   const result = await response.json();
 
-  if (!result.success) {
+  if (!result.success || !result.data) {
     return null;
   }
 
-  return result.data;
+  return result.data as ApiWorkspace;
 }
 
 export default async function WorkspaceDetailPage({
@@ -61,48 +61,41 @@ export default async function WorkspaceDetailPage({
     notFound();
   }
 
+  /*
+   * API data ni existing UI structure ki map chestunnam.
+   *
+   * Documents / notes / members / advisors
+   * ippudu DB lo separate tables connect cheyyaledu kabatti
+   * temporary ga 0.
+   */
+  const workspaceDetail = {
+    id: workspace.id,
+    name: workspace.workspace_name,
+    status: "Active",
+    description:
+      workspace.workspace_description || "",
+    owner: workspace.created_by || "Founder",
+    created: new Date(
+      workspace.created_at
+    ).toLocaleDateString(),
+    updated: new Date(
+      workspace.updated_at
+    ).toLocaleString(),
+
+    documents: 0,
+    notes: 0,
+    members: 0,
+    advisors: 0,
+  };
+
   return (
     <div className="space-y-8">
       <WorkspaceHero
-        workspace={{
-          id: workspace.id,
-          name: workspace.workspace_name,
-          status: "Active",
-          description:
-            workspace.workspace_description ?? "",
-          owner: workspace.created_by ?? "Unknown",
-          created: new Date(
-            workspace.created_at
-          ).toLocaleDateString(),
-          updated: new Date(
-            workspace.updated_at
-          ).toLocaleDateString(),
-          documents: 0,
-          notes: 0,
-          members: 0,
-          advisors: 0,
-        }}
+        workspace={workspaceDetail}
       />
 
       <WorkspaceStats
-        workspace={{
-          id: workspace.id,
-          name: workspace.workspace_name,
-          status: "Active",
-          description:
-            workspace.workspace_description ?? "",
-          owner: workspace.created_by ?? "Unknown",
-          created: new Date(
-            workspace.created_at
-          ).toLocaleDateString(),
-          updated: new Date(
-            workspace.updated_at
-          ).toLocaleDateString(),
-          documents: 0,
-          notes: 0,
-          members: 0,
-          advisors: 0,
-        }}
+        workspace={workspaceDetail}
       />
 
       <div className="grid grid-cols-12 gap-6">
@@ -115,7 +108,7 @@ export default async function WorkspaceDetailPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6 mt-6">
+      <div className="grid grid-cols-12 gap-6">
         <div className="col-span-7">
           <NotesSection />
         </div>
@@ -125,7 +118,7 @@ export default async function WorkspaceDetailPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6 mt-6">
+      <div className="grid grid-cols-12 gap-6">
         <div className="col-span-4">
           <BrainMapCard />
         </div>

@@ -101,7 +101,8 @@ export async function POST(request: Request) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("Workspace POST Error:", error);
 
     return NextResponse.json(

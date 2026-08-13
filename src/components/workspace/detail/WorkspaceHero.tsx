@@ -59,9 +59,7 @@ export default function WorkspaceHero({
         </div>
 
         <button
-          onClick={() =>
-            setEditOpen(true)
-          }
+          onClick={() => setEditOpen(true)}
           className="
             h-12
             px-6
@@ -79,9 +77,8 @@ export default function WorkspaceHero({
 
       <EditWorkspaceModal
         open={editOpen}
-        onClose={() =>
-          setEditOpen(false)
-        }
+        onClose={() => setEditOpen(false)}
+        workspace={workspace}
       />
     </>
   );
