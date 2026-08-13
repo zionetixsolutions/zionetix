@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { z } from "zod";
-import { supabase } from "@/lib/supabase";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -25,13 +25,31 @@ export async function POST(req: Request) {
       );
     }
 
-    const {
-      email,
-      venture_id,
-      password,
-    } = validation.data;
+    const { email, venture_id, password } = validation.data;
 
-    // Supabase login
+    const cookieStore = await cookies();
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(
+              ({ name, value, options }) => {
+                cookieStore.set(name, value, options);
+              }
+            );
+          },
+        },
+      }
+    );
+
+    // LOGIN
     const {
       data,
       error,
@@ -40,27 +58,17 @@ export async function POST(req: Request) {
       password,
     });
 
-    if (error) {
+    if (error || !data.user) {
       return NextResponse.json(
         {
           success: false,
-          message: error.message,
+          message: error?.message || "Login failed",
         },
         { status: 400 }
       );
     }
 
-    if (!data.user || !data.session) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Login failed",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Get founder profile
+    // PROFILE
     const {
       data: profile,
       error: profileError,
@@ -71,11 +79,6 @@ export async function POST(req: Request) {
       .single();
 
     if (profileError || !profile) {
-      console.error(
-        "PROFILE FETCH ERROR:",
-        profileError
-      );
-
       return NextResponse.json(
         {
           success: false,
@@ -85,7 +88,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Get venture
+    // VENTURE
     const {
       data: venture,
       error: ventureError,
@@ -96,11 +99,6 @@ export async function POST(req: Request) {
       .single();
 
     if (ventureError || !venture) {
-      console.error(
-        "VENTURE FETCH ERROR:",
-        ventureError
-      );
-
       return NextResponse.json(
         {
           success: false,
@@ -110,7 +108,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verify Venture ID
+    // CHECK VENTURE ID
     if (venture.venture_id !== venture_id) {
       return NextResponse.json(
         {
@@ -121,42 +119,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // -----------------------------------------
-    // STORE SUPABASE SESSION IN HTTP-ONLY COOKIES
-    // -----------------------------------------
-
-    const cookieStore = await cookies();
-
-    cookieStore.set(
-      "sb-access-token",
-      data.session.access_token,
-      {
-        httpOnly: true,
-        secure:
-          process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24,
-      }
-    );
-
-    cookieStore.set(
-      "sb-refresh-token",
-      data.session.refresh_token,
-      {
-        httpOnly: true,
-        secure:
-          process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 30,
-      }
-    );
-
-    // -----------------------------------------
-    // SUCCESS RESPONSE
-    // -----------------------------------------
-
+    // SUCCESS
     return NextResponse.json({
       success: true,
 
@@ -175,11 +138,7 @@ export async function POST(req: Request) {
     });
 
   } catch (error) {
-
-    console.error(
-      "LOGIN ERROR:",
-      error
-    );
+    console.error("LOGIN ERROR:", error);
 
     return NextResponse.json(
       {
