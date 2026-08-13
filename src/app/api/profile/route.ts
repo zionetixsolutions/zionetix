@@ -1,50 +1,56 @@
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { supabase } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    const supabase = await createSupabaseServerClient();
-
     const {
       data: { user },
-      error: authError,
+      error: userError,
     } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-      return NextResponse.json({
-        success: false,
-        message: "Not logged in",
-      });
+    if (userError) {
+      console.error("PROFILE USER ERROR:", userError);
     }
 
-    const {
-      data,
-      error,
-    } = await supabase
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Not logged in",
+        },
+        { status: 401 }
+      );
+    }
+
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("full_name, email, profile_image")
       .eq("id", user.id)
       .single();
 
-    if (error) {
-      return NextResponse.json({
-        success: false,
-        message: error.message,
-      });
+    if (profileError) {
+      console.error("PROFILE DB ERROR:", profileError);
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: profileError.message,
+        },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
       success: true,
-      profile: data,
+      profile,
     });
-
   } catch (error) {
-    console.error("PROFILE ERROR:", error);
+    console.error("PROFILE API ERROR:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to fetch profile",
+        message: "Server Error",
       },
       { status: 500 }
     );

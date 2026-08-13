@@ -1,17 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-interface TeamMember {
-  id: string;
-  member_id: string;
-  full_name: string;
-  email: string;
-  role: string;
-}
+import type { Member } from "@/types/member";
 interface EditMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  member: TeamMember | null;
+  member: Member | null;
   onSuccess: () => void;
 }
 
@@ -28,7 +22,7 @@ export default function EditMemberModal({
   if (!member) return;
 
   const syncMember = () => {
-    setFullName(member.full_name);
+    setFullName(member.name);
     setRole(member.role);
   };
 
@@ -70,53 +64,160 @@ export default function EditMemberModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-md p-6">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div
+      className="
+        w-full
+        max-w-lg
+        max-h-[80vh]
+        overflow-hidden
+        rounded-2xl
+        border border-zinc-800
+        bg-zinc-900
+        shadow-2xl
+      "
+    >
+      {/* Scrollable Content */}
+      <div className="max-h-[80vh] overflow-y-auto">
 
-        <h2 className="text-xl font-bold text-white mb-6">
-          Edit Member
-        </h2>
+        {/* Header */}
+        <div className="sticky top-0 bg-zinc-900 px-6 pt-6 pb-4 border-b border-zinc-800 z-10">
+          <h2 className="text-xl font-semibold text-white">
+            Edit Member
+          </h2>
 
-        <div className="space-y-4">
+          <p className="text-sm text-zinc-400 mt-1">
+            Update member information.
+          </p>
+        </div>
 
-          <input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="w-full p-3 rounded-lg bg-zinc-800 text-white"
-          />
+        {/* Body */}
+        <div className="px-6 py-5 space-y-5">
 
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full p-3 rounded-lg bg-zinc-800 text-white"
-          >
-            <option value="developer">Developer</option>
-            <option value="designer">Designer</option>
-            <option value="manager">Manager</option>
-          </select>
+          {/* Full Name */}
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-zinc-400 mb-2">
+              Full Name
+            </label>
 
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="
+                w-full
+                rounded-lg
+                border border-zinc-700
+                bg-zinc-800
+                px-4
+                py-3
+                text-white
+                outline-none
+                focus:border-yellow-400
+              "
+            />
+          </div>
+
+          {/* Role */}
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-zinc-400 mb-2">
+              Role
+            </label>
+
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="
+                w-full
+                rounded-lg
+                border border-zinc-700
+                bg-zinc-800
+                px-4
+                py-3
+                text-white
+                outline-none
+                focus:border-yellow-400
+              "
+            >
+              <option value="developer">Developer</option>
+              <option value="designer">Designer</option>
+              <option value="manager">Manager</option>
+            </select>
+          </div>
+
+          {/* Dummy fields to demonstrate scrolling */}
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-zinc-400 mb-2">
+              Department
+            </label>
+
+            <input
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white"
+              placeholder="Engineering"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-zinc-400 mb-2">
+              Email
+            </label>
+
+            <input
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white"
+              placeholder="john@example.com"
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-yellow-400"
+            />
+
+            <span className="text-sm text-zinc-300">
+              Active Member
+            </span>
+          </div>
+
+        </div>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-zinc-900 border-t border-zinc-800 px-6 py-4">
           <div className="flex gap-3">
-
             <button
               onClick={onClose}
-              className="flex-1 bg-zinc-700 text-white py-3 rounded-lg"
+              className="
+                flex-1
+                rounded-lg
+                border
+                border-zinc-700
+                py-3
+                text-white
+                hover:bg-zinc-800
+              "
             >
               Cancel
             </button>
 
             <button
               onClick={updateMember}
-              className="flex-1 bg-yellow-400 text-black py-3 rounded-lg font-semibold"
+              className="
+                flex-1
+                rounded-lg
+                bg-yellow-400
+                py-3
+                font-semibold
+                text-black
+                hover:bg-yellow-300
+              "
             >
-              Update
+              Save Changes
             </button>
-
           </div>
-
         </div>
 
       </div>
     </div>
-  );
+  </div>
+);
 }

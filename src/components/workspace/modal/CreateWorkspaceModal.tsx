@@ -56,12 +56,7 @@ export default function CreateWorkspaceModal({
           </button>
         </div>
 
-       <WorkspaceForm
-  onClose={onClose}
-  onCreated={() => {
-    window.location.reload();
-  }}
-/>
+        <WorkspaceForm onClose={onClose} />
       </div>
     </div>
   );
