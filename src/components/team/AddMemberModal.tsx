@@ -14,11 +14,13 @@ import {
 interface AddMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 export default function AddMemberModal({
   isOpen,
   onClose,
+  onSuccess,
 }: AddMemberModalProps) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,8 +39,6 @@ export default function AddMemberModal({
           email,
           password,
           role,
-          ventureId:
-            "25ba5c5f-9898-4477-a38d-511c5b835cda",
         }),
       });
 
@@ -51,8 +51,7 @@ export default function AddMemberModal({
         setRole("Developer");
 
         onClose();
-
-        window.location.reload();
+        onSuccess?.();
       } else {
         alert(data.message);
       }

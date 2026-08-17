@@ -2,10 +2,16 @@
 
 import { useState, useEffect } from "react";
 import type { Member } from "@/types/member";
+
+type EditableMember = Pick<Member, "member_id" | "role"> & {
+  name?: string;
+  full_name?: string;
+};
+
 interface EditMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  member: Member | null;
+  member: EditableMember | null;
   onSuccess: () => void;
 }
 
@@ -22,7 +28,7 @@ export default function EditMemberModal({
   if (!member) return;
 
   const syncMember = () => {
-    setFullName(member.name);
+    setFullName(member.name ?? member.full_name ?? "");
     setRole(member.role);
   };
 
