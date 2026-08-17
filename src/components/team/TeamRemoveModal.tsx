@@ -2,22 +2,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle } from "lucide-react";
-
-type Member = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: "Active" | "Pending Invite";
-  lastActive: string;
-  joinedDate: string;
-  avatarUrl?: string;
-};
+import type { Member } from "@/types/member";
 
 interface TeamRemoveModalProps {
   isOpen: boolean;
   member: Member | null;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 const removalConsequences = [
@@ -31,12 +22,27 @@ export default function TeamRemoveModal({
   isOpen,
   member,
   onClose,
+  onSuccess,
 }: TeamRemoveModalProps) {
   if (!member) return null;
 
-  const handleRemove = () => {
-    // TODO: API Call
-    onClose();
+  const handleRemove = async () => {
+    try {
+      const response = await fetch(`/api/team/member/${member.member_id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to remove member");
+      }
+
+      onSuccess?.();
+      onClose();
+    } catch (error) {
+      console.error("TEAM MEMBER DELETE ERROR:", error);
+      alert(error instanceof Error ? error.message : "Failed to remove member");
+    }
   };
 
   return (
