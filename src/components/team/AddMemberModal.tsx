@@ -6,7 +6,6 @@ import {
   X,
   User,
   Mail,
-  Lock,
   Briefcase,
   UserPlus,
 } from "lucide-react";
@@ -14,53 +13,82 @@ import {
 interface AddMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
+  workspaceId: string;
 }
 
 export default function AddMemberModal({
   isOpen,
   onClose,
+  workspaceId,
 }: AddMemberModalProps) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [role, setRole] = useState("Developer");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const createMember = async () => {
+  async function createMember() {
+    setError("");
+
+    if (!fullName.trim()) {
+      setError("Full name is required");
+      return;
+    }
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
     try {
-      const response = await fetch("/api/team/members", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName,
-          email,
-          password,
-          role,
-          ventureId:
-            "25ba5c5f-9898-4477-a38d-511c5b835cda",
-        }),
-      });
+      setLoading(true);
+
+      const response = await fetch(
+        `/api/workspaces/${workspaceId}/members`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            full_name: fullName.trim(),
+            email: email.trim(),
+            role: role.trim(),
+          }),
+        }
+      );
 
       const data = await response.json();
 
-      if (data.success) {
-        setFullName("");
-        setEmail("");
-        setPassword("");
-        setRole("Developer");
-
-        onClose();
-
-        window.location.reload();
-      } else {
-        alert(data.message);
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message ||
+            "Failed to add team member"
+        );
       }
+
+      setFullName("");
+      setEmail("");
+      setRole("Developer");
+
+      onClose();
+
+      window.location.reload();
     } catch (error) {
-      console.error(error);
-      alert("Something went wrong");
+      console.error(
+        "Create Member Error:",
+        error
+      );
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to add team member"
+      );
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <AnimatePresence>
@@ -72,7 +100,11 @@ export default function AddMemberModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.45 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={() => {
+              if (!loading) {
+                onClose();
+              }
+            }}
             className="fixed inset-0 z-50 bg-black"
           />
 
@@ -113,9 +145,7 @@ export default function AddMemberModal({
               {/* Header */}
 
               <div className="flex items-start justify-between border-b p-7">
-
                 <div>
-
                   <h2 className="text-2xl font-bold">
                     Add Team Member
                   </h2>
@@ -123,32 +153,34 @@ export default function AddMemberModal({
                   <p className="mt-1 text-sm text-zinc-500">
                     Invite a new member to your workspace.
                   </p>
-
                 </div>
 
                 <button
+                  type="button"
                   onClick={onClose}
-                  className="rounded-xl p-2 hover:bg-zinc-100 transition"
+                  disabled={loading}
+                  className="
+                    rounded-xl
+                    p-2
+                    hover:bg-zinc-100
+                    transition
+                    disabled:opacity-50
+                  "
                 >
                   <X size={18} />
                 </button>
-
               </div>
 
               {/* Body */}
 
               <div className="space-y-6 p-7">
 
-                {/* Name */}
+                {/* Full Name */}
 
                 <div>
-
                   <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
-
                     <User size={16} />
-
                     Full Name
-
                   </label>
 
                   <input
@@ -158,31 +190,29 @@ export default function AddMemberModal({
                       setFullName(e.target.value)
                     }
                     placeholder="John Founder"
+                    disabled={loading}
                     className="
                       w-full
                       rounded-xl
                       border
+                      border-zinc-200
                       px-4
                       py-3
                       text-sm
                       outline-none
                       transition
                       focus:border-black
+                      disabled:bg-zinc-50
                     "
                   />
-
                 </div>
 
                 {/* Email */}
 
                 <div>
-
                   <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
-
                     <Mail size={16} />
-
                     Email Address
-
                   </label>
 
                   <input
@@ -192,65 +222,29 @@ export default function AddMemberModal({
                       setEmail(e.target.value)
                     }
                     placeholder="john@company.com"
+                    disabled={loading}
                     className="
                       w-full
                       rounded-xl
                       border
+                      border-zinc-200
                       px-4
                       py-3
                       text-sm
                       outline-none
                       transition
                       focus:border-black
+                      disabled:bg-zinc-50
                     "
                   />
-
-                </div>
-
-                {/* Password */}
-
-                <div>
-
-                  <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
-
-                    <Lock size={16} />
-
-                    Temporary Password
-
-                  </label>
-
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) =>
-                      setPassword(e.target.value)
-                    }
-                    placeholder="••••••••"
-                    className="
-                      w-full
-                      rounded-xl
-                      border
-                      px-4
-                      py-3
-                      text-sm
-                      outline-none
-                      transition
-                      focus:border-black
-                    "
-                  />
-
                 </div>
 
                 {/* Role */}
 
                 <div>
-
                   <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
-
                     <Briefcase size={16} />
-
                     Role
-
                   </label>
 
                   <select
@@ -258,29 +252,69 @@ export default function AddMemberModal({
                     onChange={(e) =>
                       setRole(e.target.value)
                     }
+                    disabled={loading}
                     className="
                       w-full
                       rounded-xl
                       border
+                      border-zinc-200
                       px-4
                       py-3
                       text-sm
                       outline-none
                       transition
                       focus:border-black
+                      disabled:bg-zinc-50
                     "
                   >
-                    <option>Founder</option>
-                    <option>Administrator</option>
-                    <option>Manager</option>
-                    <option>Developer</option>
-                    <option>Designer</option>
-                    <option>Editor</option>
-                    <option>Viewer</option>
-                  </select>
+                    <option value="Founder">
+                      Founder
+                    </option>
 
+                    <option value="Administrator">
+                      Administrator
+                    </option>
+
+                    <option value="Manager">
+                      Manager
+                    </option>
+
+                    <option value="Developer">
+                      Developer
+                    </option>
+
+                    <option value="Designer">
+                      Designer
+                    </option>
+
+                    <option value="Editor">
+                      Editor
+                    </option>
+
+                    <option value="Viewer">
+                      Viewer
+                    </option>
+                  </select>
                 </div>
 
+                {/* Error */}
+
+                {error && (
+                  <div
+                    className="
+                      rounded-xl
+                      border
+                      border-red-200
+                      bg-red-50
+                      px-4
+                      py-3
+                      text-sm
+                      text-red-600
+                    "
+                  >
+                    {error}
+                  </div>
+                )}
               </div>
 
               {/* Footer */}
@@ -288,21 +322,27 @@ export default function AddMemberModal({
               <div className="flex justify-end gap-3 border-t p-6">
 
                 <button
+                  type="button"
                   onClick={onClose}
+                  disabled={loading}
                   className="
                     rounded-xl
                     border
+                    border-zinc-200
                     px-6
                     py-3
                     font-medium
                     hover:bg-zinc-50
+                    disabled:opacity-50
                   "
                 >
                   Cancel
                 </button>
 
                 <button
+                  type="button"
                   onClick={createMember}
+                  disabled={loading}
                   className="
                     flex
                     items-center
@@ -315,14 +355,18 @@ export default function AddMemberModal({
                     text-white
                     transition
                     hover:bg-zinc-800
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
                   "
                 >
                   <UserPlus size={17} />
-                  Create Member
+
+                  {loading
+                    ? "Creating..."
+                    : "Create Member"}
                 </button>
 
               </div>
-
             </div>
           </motion.div>
         </>

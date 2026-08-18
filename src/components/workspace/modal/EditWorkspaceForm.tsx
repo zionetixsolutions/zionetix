@@ -61,16 +61,52 @@ export default function EditWorkspaceForm({
         }
       );
 
-      const result = await response.json();
+      /*
+       * Do NOT directly call response.json().
+       * Some successful API responses may have an
+       * empty response body.
+       */
+      const responseText =
+        await response.text();
+
+      let result: {
+        success?: boolean;
+        message?: string;
+        data?: unknown;
+      } | null = null;
+
+      if (responseText.trim()) {
+        try {
+          result = JSON.parse(
+            responseText
+          );
+        } catch {
+          result = null;
+        }
+      }
 
       console.log(
         "UPDATE WORKSPACE:",
         result
       );
 
+      /*
+       * HTTP error
+       */
+      if (!response.ok) {
+        throw new Error(
+          result?.message ||
+            "Failed to update workspace"
+        );
+      }
+
+      /*
+       * If API returned JSON and explicitly says
+       * success: false, treat it as an error.
+       */
       if (
-        !response.ok ||
-        !result.success
+        result &&
+        result.success === false
       ) {
         throw new Error(
           result.message ||
@@ -78,6 +114,9 @@ export default function EditWorkspaceForm({
         );
       }
 
+      /*
+       * Success
+       */
       onClose();
 
       // Refresh the current detail page
@@ -138,6 +177,7 @@ export default function EditWorkspaceForm({
           <button
             onClick={onClose}
             disabled={loading}
+            type="button"
           >
             <X
               size={18}
@@ -306,11 +346,15 @@ export default function EditWorkspaceForm({
               overflow-hidden
               "
             >
-              <button className="flex-1 text-sm">
+              <button
+                type="button"
+                className="flex-1 text-sm"
+              >
                 Private
               </button>
 
               <button
+                type="button"
                 className="
                 flex-1
                 bg-amber-700
@@ -453,6 +497,7 @@ export default function EditWorkspaceForm({
         "
       >
         <button
+          type="button"
           onClick={onClose}
           disabled={loading}
           className="
@@ -469,6 +514,7 @@ export default function EditWorkspaceForm({
         </button>
 
         <button
+          type="button"
           onClick={handleSave}
           disabled={loading}
           className="

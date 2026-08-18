@@ -15,6 +15,10 @@ interface PageProps {
   }>;
 }
 
+/* =========================================================
+   API TYPES
+========================================================= */
+
 interface ApiWorkspace {
   id: string;
   venture_id: string;
@@ -25,108 +29,243 @@ interface ApiWorkspace {
   updated_at: string;
 }
 
-async function getWorkspace(id: string) {
+interface WorkspaceDocument {
+  id: string;
+  document_id: string;
+  venture_id: string;
+  title: string | null;
+  file_url: string | null;
+  uploaded_by: string | null;
+  created_at: string;
+}
+
+interface WorkspaceNote {
+  id: string;
+  workspace_id: string;
+  title: string;
+  content: string;
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface WorkspaceMember {
+  id: string;
+  member_id: string;
+  full_name: string;
+  email: string;
+  role: string;
+  created_at: string;
+}
+
+interface WorkspaceActivityItem {
+  id: string;
+  workspace_id: string;
+  action_type: string;
+  entity_type: string;
+  entity_id: string;
+  performed_by: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+}
+
+interface WorkspaceStatsData {
+  documents: number;
+  notes: number;
+  members: number;
+  advisors: number;
+}
+
+interface WorkspaceApiData {
+  workspace: ApiWorkspace;
+  stats: WorkspaceStatsData;
+  documents: WorkspaceDocument[];
+  notes: WorkspaceNote[];
+  members: WorkspaceMember[];
+  activities: WorkspaceActivityItem[];
+}
+
+interface WorkspaceApiResponse {
+  success: boolean;
+  data: WorkspaceApiData;
+}
+
+/* =========================================================
+   FETCH WORKSPACE
+========================================================= */
+
+async function getWorkspace(
+  id: string
+): Promise<WorkspaceApiData | null> {
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
     "http://localhost:3000";
 
-  const response = await fetch(
-    `${baseUrl}/api/workspaces/${id}`,
-    {
-      cache: "no-store",
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/workspaces/${id}`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      return null;
     }
-  );
 
-  if (!response.ok) {
+    const result =
+      (await response.json()) as WorkspaceApiResponse;
+
+    if (
+      !result.success ||
+      !result.data ||
+      !result.data.workspace
+    ) {
+      return null;
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error(
+      "Workspace fetch error:",
+      error
+    );
+
     return null;
   }
-
-  const result = await response.json();
-
-  if (!result.success || !result.data) {
-    return null;
-  }
-
-  return result.data as ApiWorkspace;
 }
+
+/* =========================================================
+   PAGE
+========================================================= */
 
 export default async function WorkspaceDetailPage({
   params,
 }: PageProps) {
   const { id } = await params;
 
-  const workspace = await getWorkspace(id);
+  const workspaceData =
+    await getWorkspace(id);
 
-  if (!workspace) {
+  if (!workspaceData) {
     notFound();
   }
 
-  /*
-   * API data ni existing UI structure ki map chestunnam.
-   *
-   * Documents / notes / members / advisors
-   * ippudu DB lo separate tables connect cheyyaledu kabatti
-   * temporary ga 0.
-   */
+  const workspace =
+    workspaceData.workspace;
+
+  /* =======================================================
+     EXISTING WORKSPACE DETAIL UI STRUCTURE
+  ======================================================= */
+
   const workspaceDetail = {
     id: workspace.id,
+
     name: workspace.workspace_name,
+
     status: "Active",
+
     description:
       workspace.workspace_description || "",
-    owner: workspace.created_by || "Founder",
+
+    owner:
+      workspace.created_by || "Founder",
+
     created: new Date(
       workspace.created_at
     ).toLocaleDateString(),
+
     updated: new Date(
       workspace.updated_at
     ).toLocaleString(),
 
-    documents: 0,
-    notes: 0,
-    members: 0,
-    advisors: 0,
+    documents:
+      workspaceData.stats.documents,
+
+    notes:
+      workspaceData.stats.notes,
+
+    members:
+      workspaceData.stats.members,
+
+    advisors:
+      workspaceData.stats.advisors,
   };
 
   return (
     <div className="space-y-8">
+
+      {/* HERO */}
+
       <WorkspaceHero
         workspace={workspaceDetail}
       />
+
+      {/* STATS */}
 
       <WorkspaceStats
         workspace={workspaceDetail}
       />
 
+      {/* DOCUMENTS + MEMBERS */}
+
       <div className="grid grid-cols-12 gap-6">
+
         <div className="col-span-7">
-          <RecentDocuments />
+          <RecentDocuments
+  workspaceId={workspaceData.workspace.id}
+  documents={workspaceData.documents}
+/>
         </div>
 
         <div className="col-span-5">
-          <TeamMembers />
+       <TeamMembers
+  members={workspaceData.members}
+  workspaceId={workspace.id}
+/>
         </div>
+
       </div>
 
+      {/* NOTES + ACTIVITY */}
+
       <div className="grid grid-cols-12 gap-6">
+
         <div className="col-span-7">
-          <NotesSection />
+          <NotesSection
+            notes={
+              workspaceData.notes
+            }
+          />
         </div>
 
         <div className="col-span-5">
-          <ActivityPanel />
+          <ActivityPanel
+            activities={
+              workspaceData.activities
+            }
+          />
         </div>
+
       </div>
 
+      {/* BRAIN MAP + AI */}
+
       <div className="grid grid-cols-12 gap-6">
+
         <div className="col-span-4">
-          <BrainMapCard />
+          <BrainMapCard
+  workspaceId={workspace.id}
+/>
         </div>
 
         <div className="col-span-8">
           <AIAdvisorCard />
         </div>
+
       </div>
+
     </div>
   );
 }

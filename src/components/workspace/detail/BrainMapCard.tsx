@@ -5,7 +5,15 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-export default function BrainMapCard() {
+import Link from "next/link";
+
+interface Props {
+  workspaceId: string;
+}
+
+export default function BrainMapCard({
+  workspaceId,
+}: Props) {
   return (
     <div
       className="
@@ -18,6 +26,9 @@ export default function BrainMapCard() {
       "
     >
       <div className="flex gap-5">
+
+        {/* ICON */}
+
         <div
           className="
             w-28
@@ -36,7 +47,10 @@ export default function BrainMapCard() {
           />
         </div>
 
+        {/* CONTENT */}
+
         <div className="flex flex-col justify-between">
+
           <div>
             <p className="text-sm text-zinc-500">
               Visual Architecture
@@ -47,13 +61,17 @@ export default function BrainMapCard() {
             </h3>
 
             <p className="text-sm text-zinc-500 mt-2 leading-6 max-w-md">
-              A visual representation of the product
-              development flow, dependencies,
-              priorities and key decisions.
+              A visual representation of the
+              product development flow,
+              dependencies, priorities and
+              key decisions.
             </p>
           </div>
 
-          <button
+          {/* ACTION */}
+
+          <Link
+            href={`/founder/brain-map/${workspaceId}`}
             className="
               mt-4
               flex
@@ -74,7 +92,8 @@ export default function BrainMapCard() {
             View Brain Map
 
             <ExternalLink size={15} />
-          </button>
+          </Link>
+
         </div>
       </div>
     </div>
