@@ -140,10 +140,47 @@ async function getWorkspace(
    PAGE
 ========================================================= */
 
-export default async function WorkspaceDetailPage({
+export default async function WorkspaceNotesPage({
   params,
 }: PageProps) {
-  const { id } = await params;
+  const resolvedParams = await params;
+
+  console.log(
+    "========== NOTES ROUTE DEBUG =========="
+  );
+
+  console.log(
+    "resolvedParams:",
+    resolvedParams
+  );
+
+  console.log(
+    "workspace id:",
+    resolvedParams?.id
+  );
+
+  console.log(
+    "========================================"
+  );
+
+  const id = resolvedParams?.id;
+
+  if (!id) {
+    return (
+      <div className="p-10 text-red-600">
+        Workspace ID is missing.
+        <pre className="mt-4">
+          {JSON.stringify(
+            resolvedParams,
+            null,
+            2
+          )}
+        </pre>
+      </div>
+    );
+  }
+
+  // remaining code...
 
   const workspaceData =
     await getWorkspace(id);
@@ -233,11 +270,10 @@ export default async function WorkspaceDetailPage({
       <div className="grid grid-cols-12 gap-6">
 
         <div className="col-span-7">
-          <NotesSection
-            notes={
-              workspaceData.notes
-            }
-          />
+        <NotesSection
+  workspaceId={workspaceData.workspace.id}
+  notes={workspaceData.notes}
+/>
         </div>
 
         <div className="col-span-5">
@@ -261,7 +297,9 @@ export default async function WorkspaceDetailPage({
         </div>
 
         <div className="col-span-8">
-          <AIAdvisorCard />
+           <AIAdvisorCard
+      workspaceId={workspace.id}
+    />
         </div>
 
       </div>

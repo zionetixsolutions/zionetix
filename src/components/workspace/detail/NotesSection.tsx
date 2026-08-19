@@ -1,26 +1,45 @@
 "use client";
 
-import { FileText, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import {
+  FileText,
+  ChevronRight,
+} from "lucide-react";
+
 import { WorkspaceNote } from "@/types/workspace";
 
 interface Props {
+  workspaceId: string;
   notes: WorkspaceNote[];
 }
 
 export default function NotesSection({
+  workspaceId,
   notes,
 }: Props) {
   return (
     <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden">
+
       <div className="flex items-center justify-between px-6 py-5 border-b">
         <h3 className="font-semibold text-lg">
           Workspace Notes
         </h3>
 
-        <button className="flex items-center gap-2 text-sm">
+        <Link
+          href={`/founder/workspace/${workspaceId}/notes`}
+          className="
+            flex
+            items-center
+            gap-2
+            text-sm
+            font-medium
+            text-zinc-600
+            hover:text-black
+          "
+        >
           View all notes
           <ChevronRight size={16} />
-        </button>
+        </Link>
       </div>
 
       {notes.length === 0 ? (
@@ -32,10 +51,27 @@ export default function NotesSection({
           {notes.map((note) => (
             <div
               key={note.id}
-              className="border border-zinc-200 rounded-2xl p-5"
+              className="
+                border
+                border-zinc-200
+                rounded-2xl
+                p-5
+              "
             >
               <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+
+                <div
+                  className="
+                    w-12
+                    h-12
+                    rounded-xl
+                    bg-amber-50
+                    flex
+                    items-center
+                    justify-center
+                    shrink-0
+                  "
+                >
                   <FileText
                     size={20}
                     className="text-amber-500"
@@ -43,6 +79,7 @@ export default function NotesSection({
                 </div>
 
                 <div className="min-w-0">
+
                   <p className="text-xs text-zinc-500">
                     {new Date(
                       note.created_at
@@ -50,13 +87,15 @@ export default function NotesSection({
                   </p>
 
                   <h4 className="font-semibold mt-2">
-                    {note.title}
+                    {note.title || "Untitled Note"}
                   </h4>
 
-                  <p className="text-sm text-zinc-500 mt-2 leading-6">
+                  <p className="text-sm text-zinc-500 mt-2 leading-6 line-clamp-3">
                     {note.content}
                   </p>
+
                 </div>
+
               </div>
             </div>
           ))}

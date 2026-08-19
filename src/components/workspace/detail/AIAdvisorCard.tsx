@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import {
   Code2,
   TrendingUp,
   Landmark,
   Scale,
   MessageSquare,
+  ChevronRight,
 } from "lucide-react";
 
 const advisors = [
@@ -14,57 +16,52 @@ const advisors = [
     title: "AI Tech Advisor",
     activity: "2h ago",
     icon: Code2,
-    color:
-      "bg-blue-50 text-blue-600",
+    color: "bg-blue-50 text-blue-600",
   },
-
   {
     id: 2,
     title: "AI Market Advisor",
     activity: "5h ago",
     icon: TrendingUp,
-    color:
-      "bg-indigo-50 text-indigo-600",
+    color: "bg-indigo-50 text-indigo-600",
   },
-
   {
     id: 3,
     title: "AI Finance Advisor",
     activity: "1d ago",
     icon: Landmark,
-    color:
-      "bg-green-50 text-green-600",
+    color: "bg-green-50 text-green-600",
   },
-
   {
     id: 4,
     title: "AI Legal Advisor",
     activity: "3d ago",
     icon: Scale,
-    color:
-      "bg-purple-50 text-purple-600",
+    color: "bg-purple-50 text-purple-600",
   },
 ];
 
-export default function AIAdvisorCard() {
+interface Props {
+  workspaceId: string;
+}
+
+export default function AIAdvisorCard({
+  workspaceId,
+}: Props) {
   return (
-    <div
-      className="
-        bg-white
-        border
-        border-zinc-200
-        rounded-2xl
-        p-6
-      "
-    >
+    <div className="bg-white border border-zinc-200 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="font-semibold text-lg">
           AI Advisors
         </h3>
 
-        <button className="text-sm text-zinc-500">
+        <Link
+          href={`/founder/workspace/${workspaceId}/advisors`}
+          className="flex items-center gap-1 text-sm text-zinc-500 hover:text-black transition"
+        >
           View all advisors
-        </button>
+          <ChevronRight size={16} />
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -99,6 +96,7 @@ export default function AIAdvisorCard() {
                 </div>
 
                 <button
+                  type="button"
                   className="
                     w-8
                     h-8

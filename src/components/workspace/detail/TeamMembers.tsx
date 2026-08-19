@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   UserPlus,
   ChevronRight,
@@ -261,22 +262,13 @@ export default function TeamMembers({
             {/* FOOTER */}
 
             <div className="px-6 py-4">
-              <button
-                type="button"
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-sm
-                  font-medium
-                  text-zinc-700
-                  hover:text-black
-                "
-              >
-                View all members
-
-                <ChevronRight size={16} />
-              </button>
+              <Link
+  href={`/founder/workspace/${workspaceId}/team`}
+  className="flex items-center gap-2 text-sm font-medium hover:text-zinc-600"
+>
+  View all team members
+  <ChevronRight size={16} />
+</Link>
             </div>
           </>
         )}
