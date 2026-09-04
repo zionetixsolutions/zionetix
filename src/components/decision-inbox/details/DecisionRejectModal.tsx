@@ -7,7 +7,7 @@ import { useState } from "react";
 interface Props {
   open: boolean;
   onClose: () => void;
-  onReject: () => void;
+  onReject: (comment: string) => void;
 }
 
 export default function DecisionRejectModal({
@@ -19,30 +19,37 @@ export default function DecisionRejectModal({
   const [feedback, setFeedback] = useState("");
 
   const handleReject = () => {
-    if (!reason.trim()) return;
+    if (!reason.trim()) {
+      return;
+    }
 
-    onReject();
-    onClose();
+    const comment = feedback.trim()
+      ? `Reason: ${reason.trim()}\n\nFeedback: ${feedback.trim()}`
+      : `Reason: ${reason.trim()}`;
+
+    onReject(comment);
 
     setReason("");
     setFeedback("");
+  };
+
+  const handleClose = () => {
+    setReason("");
+    setFeedback("");
+    onClose();
   };
 
   return (
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999]"
-            onClick={onClose}
+            onClick={handleClose}
           />
-
-          {/* Modal */}
 
           <motion.div
             initial={{
@@ -65,9 +72,7 @@ export default function DecisionRejectModal({
             }}
             className="fixed left-1/2 top-1/2 z-[1000] w-full max-w-lg -translate-x-1/2 -translate-y-1/2"
           >
-            <div className=" bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[75vh] flex flex-col">
-              {/* Header */}
-
+            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[75vh] flex flex-col">
               <div className="p-6 border-b">
                 <div className="flex items-start justify-between">
                   <div>
@@ -81,13 +86,14 @@ export default function DecisionRejectModal({
                     </p>
                   </div>
 
-                  <button onClick={onClose}>
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                  >
                     <X size={18} />
                   </button>
                 </div>
               </div>
-
-              {/* Content */}
 
               <div className="p-6 space-y-5 overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-zinc-300">
                 <div className="bg-zinc-50 border rounded-2xl p-3">
@@ -118,8 +124,8 @@ export default function DecisionRejectModal({
                   <textarea
                     rows={3}
                     value={reason}
-                    onChange={(e) =>
-                      setReason(e.target.value)
+                    onChange={(event) =>
+                      setReason(event.target.value)
                     }
                     placeholder="Enter rejection reason..."
                     className="w-full rounded-2xl border p-4 resize-none focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -134,8 +140,8 @@ export default function DecisionRejectModal({
                   <textarea
                     rows={2}
                     value={feedback}
-                    onChange={(e) =>
-                      setFeedback(e.target.value)
+                    onChange={(event) =>
+                      setFeedback(event.target.value)
                     }
                     placeholder="Provide recommendations..."
                     className="w-full rounded-2xl border p-4 resize-none focus:outline-none focus:ring-2 focus:ring-zinc-400"
@@ -143,20 +149,21 @@ export default function DecisionRejectModal({
                 </div>
               </div>
 
-              {/* Footer */}
-
               <div className="border-t bg-white p-5 shrink-0">
                 <div className="flex justify-end gap-3">
                   <button
-                    onClick={onClose}
+                    type="button"
+                    onClick={handleClose}
                     className="px-5 py-2.5 border rounded-xl font-medium"
                   >
                     Cancel
                   </button>
 
                   <button
+                    type="button"
                     onClick={handleReject}
-                    className="px-5 py-2.5 bg-black text-white rounded-xl font-medium"
+                    disabled={!reason.trim()}
+                    className="px-5 py-2.5 bg-black text-white rounded-xl font-medium disabled:opacity-50"
                   >
                     Reject Decision
                   </button>

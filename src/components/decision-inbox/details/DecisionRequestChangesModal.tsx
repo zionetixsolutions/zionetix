@@ -7,7 +7,7 @@ import { useState } from "react";
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (comment: string) => void;
 }
 
 export default function DecisionRequestChangesModal({
@@ -19,13 +19,24 @@ export default function DecisionRequestChangesModal({
   const [changes, setChanges] = useState("");
 
   const handleSubmit = () => {
-    if (!changes.trim()) return;
+    if (!changes.trim()) {
+      return;
+    }
 
-    onSubmit();
-    onClose();
+    const comment = reason.trim()
+      ? `Reason: ${reason.trim()}\n\nRequired Changes: ${changes.trim()}`
+      : `Required Changes: ${changes.trim()}`;
+
+    onSubmit(comment);
 
     setReason("");
     setChanges("");
+  };
+
+  const handleClose = () => {
+    setReason("");
+    setChanges("");
+    onClose();
   };
 
   return (
@@ -37,7 +48,7 @@ export default function DecisionRequestChangesModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999]"
-            onClick={onClose}
+            onClick={handleClose}
           />
 
           <motion.div
@@ -59,8 +70,6 @@ export default function DecisionRequestChangesModal({
             className="fixed left-1/2 top-1/2 z-[1000] w-full max-w-lg -translate-x-1/2 -translate-y-1/2"
           >
             <div className="bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[75vh] flex flex-col">
-              {/* Header */}
-
               <div className="p-5 border-b shrink-0">
                 <div className="flex justify-between items-start">
                   <div>
@@ -74,13 +83,14 @@ export default function DecisionRequestChangesModal({
                     </p>
                   </div>
 
-                  <button onClick={onClose}>
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                  >
                     <X size={18} />
                   </button>
                 </div>
               </div>
-
-              {/* Scrollable Body */}
 
               <div className="p-5 space-y-5 overflow-y-auto flex-1">
                 <div className="bg-zinc-50 border rounded-2xl p-3">
@@ -110,8 +120,8 @@ export default function DecisionRequestChangesModal({
 
                   <select
                     value={reason}
-                    onChange={(e) =>
-                      setReason(e.target.value)
+                    onChange={(event) =>
+                      setReason(event.target.value)
                     }
                     className="w-full border rounded-xl p-3 bg-white"
                   >
@@ -119,23 +129,23 @@ export default function DecisionRequestChangesModal({
                       Select a reason...
                     </option>
 
-                    <option>
+                    <option value="Missing Information">
                       Missing Information
                     </option>
 
-                    <option>
+                    <option value="Budget Concerns">
                       Budget Concerns
                     </option>
 
-                    <option>
+                    <option value="Timeline Issues">
                       Timeline Issues
                     </option>
 
-                    <option>
+                    <option value="Risk Assessment">
                       Risk Assessment
                     </option>
 
-                    <option>
+                    <option value="Compliance Review">
                       Compliance Review
                     </option>
                   </select>
@@ -149,8 +159,8 @@ export default function DecisionRequestChangesModal({
                   <textarea
                     rows={4}
                     value={changes}
-                    onChange={(e) =>
-                      setChanges(e.target.value)
+                    onChange={(event) =>
+                      setChanges(event.target.value)
                     }
                     placeholder="Describe required revisions..."
                     className="w-full border rounded-2xl p-4 resize-none"
@@ -180,20 +190,21 @@ export default function DecisionRequestChangesModal({
                 </div>
               </div>
 
-              {/* Footer */}
-
               <div className="border-t bg-white p-5 shrink-0">
                 <div className="flex justify-end gap-3">
                   <button
-                    onClick={onClose}
+                    type="button"
+                    onClick={handleClose}
                     className="px-5 py-2.5 border rounded-xl"
                   >
                     Cancel
                   </button>
 
                   <button
+                    type="button"
                     onClick={handleSubmit}
-                    className="px-5 py-2.5 bg-black text-white rounded-xl"
+                    disabled={!changes.trim()}
+                    className="px-5 py-2.5 bg-black text-white rounded-xl disabled:opacity-50"
                   >
                     Send Request
                   </button>

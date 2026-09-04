@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   X,
   Info,
@@ -8,13 +10,133 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+import { WorkspaceDetail } from "@/types/workspace";
+
 interface Props {
+  workspace: WorkspaceDetail;
   onClose: () => void;
 }
 
 export default function EditWorkspaceForm({
+  workspace,
   onClose,
 }: Props) {
+  const [workspaceName, setWorkspaceName] =
+    useState(workspace.name);
+
+  const [description, setDescription] =
+    useState(workspace.description);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  async function handleSave() {
+    setError("");
+
+    if (!workspaceName.trim()) {
+      setError("Workspace name is required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        `/api/workspaces/${workspace.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            workspace_name:
+              workspaceName.trim(),
+
+            workspace_description:
+              description.trim(),
+          }),
+        }
+      );
+
+      /*
+       * Do NOT directly call response.json().
+       * Some successful API responses may have an
+       * empty response body.
+       */
+      const responseText =
+        await response.text();
+
+      let result: {
+        success?: boolean;
+        message?: string;
+        data?: unknown;
+      } | null = null;
+
+      if (responseText.trim()) {
+        try {
+          result = JSON.parse(
+            responseText
+          );
+        } catch {
+          result = null;
+        }
+      }
+
+      console.log(
+        "UPDATE WORKSPACE:",
+        result
+      );
+
+      /*
+       * HTTP error
+       */
+      if (!response.ok) {
+        throw new Error(
+          result?.message ||
+            "Failed to update workspace"
+        );
+      }
+
+      /*
+       * If API returned JSON and explicitly says
+       * success: false, treat it as an error.
+       */
+      if (
+        result &&
+        result.success === false
+      ) {
+        throw new Error(
+          result.message ||
+            "Failed to update workspace"
+        );
+      }
+
+      /*
+       * Success
+       */
+      onClose();
+
+      // Refresh the current detail page
+      window.location.reload();
+    } catch (error) {
+      console.error(
+        "Update Workspace Error:",
+        error
+      );
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to update workspace"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div
       className="
@@ -52,7 +174,11 @@ export default function EditWorkspaceForm({
             </p>
           </div>
 
-          <button onClick={onClose}>
+          <button
+            onClick={onClose}
+            disabled={loading}
+            type="button"
+          >
             <X
               size={18}
               className="text-zinc-500"
@@ -106,7 +232,12 @@ export default function EditWorkspaceForm({
           </label>
 
           <input
-            defaultValue="Primordial Protocol"
+            value={workspaceName}
+            onChange={(e) =>
+              setWorkspaceName(
+                e.target.value
+              )
+            }
             className="
             w-full
             h-10
@@ -115,6 +246,8 @@ export default function EditWorkspaceForm({
             border-zinc-200
             px-3
             text-sm
+            outline-none
+            focus:border-zinc-400
             "
           />
         </div>
@@ -134,7 +267,12 @@ export default function EditWorkspaceForm({
           </label>
 
           <textarea
-            defaultValue="Core strategic operations and resource management for the decentralized evolution project."
+            value={description}
+            onChange={(e) =>
+              setDescription(
+                e.target.value
+              )
+            }
             className="
             w-full
             h-16
@@ -145,6 +283,8 @@ export default function EditWorkspaceForm({
             py-2
             text-sm
             resize-none
+            outline-none
+            focus:border-zinc-400
             "
           />
         </div>
@@ -206,11 +346,15 @@ export default function EditWorkspaceForm({
               overflow-hidden
               "
             >
-              <button className="flex-1 text-sm">
+              <button
+                type="button"
+                className="flex-1 text-sm"
+              >
                 Private
               </button>
 
               <button
+                type="button"
                 className="
                 flex-1
                 bg-amber-700
@@ -318,6 +462,26 @@ export default function EditWorkspaceForm({
             />
           </div>
         </div>
+
+        {/* ERROR */}
+
+        {error && (
+          <div
+            className="
+            mt-5
+            rounded-lg
+            border
+            border-red-200
+            bg-red-50
+            px-3
+            py-2
+            text-xs
+            text-red-600
+            "
+          >
+            {error}
+          </div>
+        )}
       </div>
 
       {/* FOOTER */}
@@ -333,7 +497,9 @@ export default function EditWorkspaceForm({
         "
       >
         <button
+          type="button"
           onClick={onClose}
+          disabled={loading}
           className="
           h-10
           px-6
@@ -341,12 +507,16 @@ export default function EditWorkspaceForm({
           border
           border-zinc-200
           text-sm
+          disabled:opacity-50
           "
         >
           Cancel
         </button>
 
         <button
+          type="button"
+          onClick={handleSave}
+          disabled={loading}
           className="
           h-10
           px-8
@@ -355,9 +525,12 @@ export default function EditWorkspaceForm({
           text-white
           text-sm
           font-medium
+          disabled:opacity-50
           "
         >
-          Save Changes
+          {loading
+            ? "Saving..."
+            : "Save Changes"}
         </button>
       </div>
     </div>

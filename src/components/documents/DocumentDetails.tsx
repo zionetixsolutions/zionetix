@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import type { Document } from "@/types/document";
+
 import ShareDocumentModal from "./modals/ShareDocumentModal";
 import DocumentsHeader from "./header/DocumentsHeader";
 import DocumentEditor from "./editor/DocumentEditor";
@@ -12,21 +13,25 @@ import AIInsights from "./sidebar/AIInsights";
 import RecentActivity from "./sidebar/RecentActivity";
 
 import VersionHistoryDrawer from "./drawers/VersionHistoryDrawer";
+
 interface DocumentDetailsProps {
-    document: Document;
-    onBack: () => void;
+  document: Document;
+  onBack: () => void;
 }
+
 export default function DocumentDetails({
+  document,
+  onBack,
 }: DocumentDetailsProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
-const [shareOpen, setShareOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+
   return (
     <>
-    <ShareDocumentModal
-    open={shareOpen}
-    onClose={() => setShareOpen(false)}
-/>
-      {/* Version History Drawer */}
+      <ShareDocumentModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+      />
 
       <VersionHistoryDrawer
         open={historyOpen}
@@ -52,15 +57,12 @@ const [shareOpen, setShareOpen] = useState(false);
           py-8
         "
       >
-        {/* Header */}
-
         <DocumentsHeader
-          onHistory={() => setHistoryOpen(true)}
-          onShare={() => setShareOpen(true)}
-
-        />
-
-        {/* Body */}
+  document={document}
+  onBack={onBack}
+  onHistory={() => setHistoryOpen(true)}
+  onShare={() => setShareOpen(true)}
+/>
 
         <div
           className="
@@ -70,17 +72,9 @@ const [shareOpen, setShareOpen] = useState(false);
             gap-8
           "
         >
-          {/* Editor */}
-
-          <div
-            className="
-              col-span-8
-            "
-          >
+          <div className="col-span-8">
             <DocumentEditor />
           </div>
-
-          {/* Sidebar */}
 
           <div
             className="
@@ -89,9 +83,7 @@ const [shareOpen, setShareOpen] = useState(false);
             "
           >
             <DocumentInfo />
-
             <AIInsights />
-
             <RecentActivity />
           </div>
         </div>

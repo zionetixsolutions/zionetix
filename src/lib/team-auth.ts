@@ -1,51 +1,71 @@
-import { cookies } from "next/headers";
-import { createClient } from "@supabase/supabase-js";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 
 export async function getFounderContext() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("sb-access-token")?.value;
+  try {
+    const supabase = await createSupabaseServerClient();
 
-  if (!accessToken) {
-    return null;
-  }
+    /*
+     * Get the currently authenticated Supabase user.
+     *
+     * Supabase SSR reads the authentication
+     * session from the server-side cookies.
+     */
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  const authenticatedSupabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-      global: {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
+    if (userError || !user) {
+      console.error(
+        "FOUNDER AUTH ERROR:",
+        userError?.message
+      );
+
+      return null;
     }
-  );
 
-  const {
-    data: { user },
-    error: userError,
-  } = await authenticatedSupabase.auth.getUser(accessToken);
+    /*
+     * Find the venture owned by this authenticated founder.
+     */
+    const {
+  data: venture,
+  error: ventureError,
+} = await supabase
+  .from("ventures")
+  .select("id, venture_id")
+  .eq("founder_id", user.id)
+  .maybeSingle();
 
-  if (userError || !user) {
+    if (ventureError) {
+      console.error(
+        "FOUNDER VENTURE ERROR:",
+        ventureError.message
+      );
+
+      return null;
+    }
+
+    if (!venture) {
+      console.error(
+        "FOUNDER VENTURE NOT FOUND:",
+        user.id
+      );
+
+      return null;
+    }
+
+   return {
+  user,
+  ventureId: venture.id,
+  ventureCode: venture.venture_id,
+  supabase,
+};
+  } catch (error) {
+    console.error(
+      "GET FOUNDER CONTEXT ERROR:",
+      error
+    );
+
     return null;
   }
-
-  const { data: venture, error: ventureError } = await authenticatedSupabase
-    .from("ventures")
-    .select("venture_id")
-    .eq("founder_id", user.id)
-    .maybeSingle();
-
-  if (ventureError || !venture) {
-    return null;
-  }
-
-  return {
-    ventureId: venture.venture_id,
-    supabase: authenticatedSupabase,
-  };
 }

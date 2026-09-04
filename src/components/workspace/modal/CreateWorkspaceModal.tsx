@@ -6,41 +6,21 @@ import WorkspaceForm from "./WorkspaceForm";
 interface Props {
   open: boolean;
   onClose: () => void;
+  onCreated?: () => void;
 }
 
 export default function CreateWorkspaceModal({
   open,
   onClose,
+  onCreated,
 }: Props) {
   if (!open) return null;
 
   return (
-    <div
-      className="
-      fixed inset-0
-      z-[999]
-      flex items-center justify-center
-      bg-black/20
-      backdrop-blur-[2px]
-      "
-    >
-      <div
-        className="
-        bg-white
-        rounded-3xl
-        shadow-2xl
-        w-[460px]
-        h-[620px]
-        overflow-hidden
-        "
-      >
-        <div
-          className="
-          flex items-start justify-between
-          px-6 py-6
-          border-b
-          "
-        >
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
+      <div className="bg-white rounded-3xl shadow-2xl w-[460px] h-[620px] overflow-hidden">
+
+        <div className="flex items-start justify-between px-6 py-6 border-b">
           <div>
             <h2 className="text-[18px] font-semibold">
               Create Workspace
@@ -56,7 +36,11 @@ export default function CreateWorkspaceModal({
           </button>
         </div>
 
-        <WorkspaceForm onClose={onClose} />
+        <WorkspaceForm
+          onClose={onClose}
+          onCreated={onCreated}
+        />
+
       </div>
     </div>
   );

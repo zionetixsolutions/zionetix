@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import { useRouter } from "next/navigation";
 import {
   LayoutGrid,
   FolderOpen,
@@ -24,7 +24,26 @@ type NavItem = {
 
 export default function Sidebar() {
   const pathname = usePathname();
+const router = useRouter();
+const handleLogout = async () => {
+  try {
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+    });
 
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      console.error("Logout failed:", data.message);
+      return;
+    }
+
+    router.replace("/");
+    router.refresh();
+  } catch (error) {
+    console.error("LOGOUT ERROR:", error);
+  }
+};
   const navItems: NavItem[] = [
     {
       label: "Dashboard",
@@ -201,9 +220,12 @@ export default function Sidebar() {
           py-2
           text-zinc-600
           "
-        >
+            type="button"
+            onClick={handleLogout}
+           >
           <LogOut size={18} />
-          Logout
+          <span>Logout</span>
+
         </button>
       </div>
     </aside>

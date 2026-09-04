@@ -1,66 +1,102 @@
-export default function WorkspaceInsights() {
+"use client";
+
+import type { Workspace } from "./WorkspaceGrid";
+
+interface Props {
+  workspaces: Workspace[];
+}
+
+export default function WorkspaceInsights({
+  workspaces,
+}: Props) {
+  const total =
+    workspaces.length;
+
+  /*
+   * Until status is available from API,
+   * all currently fetched workspaces are
+   * treated as active.
+   */
+  const active = total;
+
+  const archived = 0;
+
   return (
     <div
       className="
-      bg-white
-      border
-      border-zinc-200
-      rounded-3xl
-      p-8
+        rounded-3xl
+        border
+        border-zinc-200
+        bg-white
+        p-8
       "
     >
-      <h2
-        className="
-        text-xl
-        font-semibold
-        mb-8
-        "
-      >
-        Workspace Insights
-      </h2>
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold">
+          Workspace Insights
+        </h2>
+
+        <p className="mt-1 text-sm text-zinc-500">
+          Overview of your workspaces
+        </p>
+      </div>
 
       <div className="space-y-4">
-        <div
-          className="
-          border
-          rounded-2xl
-          p-5
-          flex
-          justify-between
-          "
-        >
-          <span>Total Workspaces</span>
-          <span>08</span>
-        </div>
+        <InsightRow
+          label="Total Workspaces"
+          value={total}
+        />
 
-        <div
-          className="
-          border
-          rounded-2xl
-          p-5
-          flex
-          justify-between
-          "
-        >
-          <span>Active</span>
-          <span className="text-green-600">
-            06
-          </span>
-        </div>
+        <InsightRow
+          label="Active"
+          value={active}
+          valueClassName="text-green-600"
+        />
 
-        <div
-          className="
-          border
-          rounded-2xl
-          p-5
-          flex
-          justify-between
-          "
-        >
-          <span>Archived</span>
-          <span>02</span>
-        </div>
+        <InsightRow
+          label="Archived"
+          value={archived}
+          valueClassName="text-zinc-500"
+        />
       </div>
+    </div>
+  );
+}
+
+function InsightRow({
+  label,
+  value,
+  valueClassName = "",
+}: {
+  label: string;
+  value: number;
+  valueClassName?: string;
+}) {
+  return (
+    <div
+      className="
+        flex
+        items-center
+        justify-between
+        rounded-2xl
+        border
+        border-zinc-200
+        p-5
+      "
+    >
+      <span className="text-sm text-zinc-600">
+        {label}
+      </span>
+
+      <span
+        className={`
+          text-lg
+          font-semibold
+          ${valueClassName}
+        `}
+      >
+        {String(value).padStart(2, "0")}
+      </span>
     </div>
   );
 }

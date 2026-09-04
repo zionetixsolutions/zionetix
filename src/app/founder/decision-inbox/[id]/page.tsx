@@ -1,5 +1,3 @@
-import DecisionDetailsPage from "@/components/decision-inbox/details/DecisionDetailsPage";
+import DecisionDetailsClient from "@/components/decision-inbox/details/DecisionDetailsClient";
 
-export default function Page() {
-  return <DecisionDetailsPage />;
-}
+export default function Page() { return <DecisionDetailsClient />; }

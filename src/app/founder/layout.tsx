@@ -7,26 +7,27 @@ export default function FounderLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-white">
 
-      <Sidebar />
+      {/* SIDEBAR */}
+      <aside className="h-screen shrink-0 overflow-y-auto">
+        <Sidebar />
+      </aside>
 
-      <div className="flex-1 flex flex-col">
+      {/* RIGHT SIDE */}
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
 
-        <Header />
+        {/* FIXED HEADER */}
+        <header className="shrink-0">
+          <Header />
+        </header>
 
-        <main
-          className="
-          flex-1
-          overflow-y-auto
-          bg-[#FAFAFA]
-          "
-        >
+        {/* ONLY THIS AREA SCROLLS */}
+        <main className="min-h-0 flex-1 overflow-y-auto bg-white p-8">
           {children}
         </main>
 
       </div>
-
     </div>
   );
 }
